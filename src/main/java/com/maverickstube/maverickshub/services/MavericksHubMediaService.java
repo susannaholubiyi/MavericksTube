@@ -22,22 +22,20 @@ import java.util.Map;
 public class MavericksHubMediaService implements MediaService{
     private final MediaRepository mediaRepository;
     private final Cloudinary cloudinary;
+    private final ModelMapper modelMapper;
+    private final UserService userService;
     @Override
     public UploadMediaResponse upload(UploadMediaRequest request) {
+
         try {
             Uploader uploader = cloudinary.uploader();
-           Map<?,?> response =  uploader.upload(request.getMediaFile().getBytes(),null);
+           Map<?,?> response =  uploader.uploadLarge(request.getMediaFile().getBytes(),ObjectUtils.asMap("resource_type", "auto"));
            log.info("cloudinary upload response:: {}", response);
-           UploadMediaResponse mediaResponse = new UploadMediaResponse();
            String url = response.get("url").toString();
-            Media media = new Media();
+            Media media = modelMapper.map(request, Media.class);
             media.setUrl(url);
-            media.setDescription(request.getDescription());
             media = mediaRepository.save(media);
-            mediaResponse.setMediaUrl(url);
-            mediaResponse.setMediaId(media.getId());
-            mediaResponse.setDescription(media.getDescription());
-            return mediaResponse;
+            return modelMapper.map(media, UploadMediaResponse.class);
         } catch (IOException e) {
             throw new MediaUploadFailedException("media upload failed");
         }

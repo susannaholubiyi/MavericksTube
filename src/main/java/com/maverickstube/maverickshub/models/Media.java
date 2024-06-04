@@ -1,11 +1,11 @@
 package com.maverickstube.maverickshub.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -16,4 +16,14 @@ public class Media {
     private Long id;
     private String url;
     private String description;
+    private Category category;
+    @Setter(AccessLevel.NONE)
+    private LocalDateTime timeCreated;
+    private LocalDateTime timeUpdated;
+    @ManyToOne
+    private User user;
+@PrePersist
+    private void setTimeCreated() {
+        this.timeCreated = LocalDateTime.now();
+    }
 }

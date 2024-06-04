@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "users")
 @Setter
@@ -14,6 +16,21 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true)
     private  String email;
     private String password;
+    private LocalDateTime timeCreated;
+    private LocalDateTime timeUpdated;
+    @PrePersist
+    private void setTimeCreated(){
+        timeCreated = LocalDateTime.now();
+    }
+    @PreUpdate
+    public void setTimeUpdated() {
+        timeUpdated = LocalDateTime.now();
+    }
+
+    public static void main(String[] args) {
+        System.out.println(LocalDateTime.now());
+    }
 }
