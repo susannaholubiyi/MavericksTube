@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -21,6 +22,8 @@ public class User {
     private String password;
     private LocalDateTime timeCreated;
     private LocalDateTime timeUpdated;
+    @OneToMany
+    private List<Media> mediaList;
     @PrePersist
     private void setTimeCreated(){
         timeCreated = LocalDateTime.now();
