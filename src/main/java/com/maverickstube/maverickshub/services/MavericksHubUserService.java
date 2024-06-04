@@ -10,12 +10,18 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class MavericksHubUserService implements UserService{
-    @Autowired
-    private UserRepository userRepository;
+
+    private final UserRepository userRepository;
+    public MavericksHubUserService(UserRepository userRepository){
+        this.userRepository = userRepository;
+    }
     @Override
     public CreateUserResponse register(CreateUserRequest createUserRequest) {
         ModelMapper modelMapper = new ModelMapper();
-        modelMapper.map(createUserRequest, User.class);
-        return null;
+        User user = modelMapper.map(createUserRequest, User.class);
+        user = userRepository.save(user);
+        var response = modelMapper.map(user, CreateUserResponse.class);
+        response.setMessage("User registered successfully");
+        return response;
     }
 }
