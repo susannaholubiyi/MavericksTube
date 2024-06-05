@@ -22,8 +22,7 @@ public class User {
     private String password;
     private LocalDateTime timeCreated;
     private LocalDateTime timeUpdated;
-    @OneToMany
-    private List<Media> mediaList;
+
     @PrePersist
     private void setTimeCreated(){
         timeCreated = LocalDateTime.now();

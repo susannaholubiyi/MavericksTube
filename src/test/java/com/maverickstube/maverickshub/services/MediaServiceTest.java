@@ -1,12 +1,20 @@
 package com.maverickstube.maverickshub.services;
 
+import com.fasterxml.jackson.databind.node.TextNode;
+import com.github.fge.jackson.jsonpointer.JsonPointer;
+import com.github.fge.jackson.jsonpointer.JsonPointerException;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchOperation;
+import com.github.fge.jsonpatch.ReplaceOperation;
 import com.maverickstube.maverickshub.dtos.request.UpdateMediaRequest;
 import com.maverickstube.maverickshub.dtos.request.UploadMediaRequest;
+import com.maverickstube.maverickshub.dtos.response.MediaResponse;
 import com.maverickstube.maverickshub.dtos.response.UpdateMediaResponse;
 import com.maverickstube.maverickshub.dtos.response.UploadMediaResponse;
 import com.maverickstube.maverickshub.models.Category;
 import com.maverickstube.maverickshub.models.Media;
 import lombok.extern.slf4j.Slf4j;
+import netscape.javascript.JSObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,9 +27,9 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
-import static com.maverickstube.maverickshub.models.Category.ACTION;
-import static com.maverickstube.maverickshub.models.Category.COMEDY;
+import static com.maverickstube.maverickshub.models.Category.*;
 import static com.maverickstube.maverickshub.utils.TestUtils.TEST_IMAGE_LOCATION;
 import static com.maverickstube.maverickshub.utils.TestUtils.TEST_VIDEO_LOCATION;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -61,18 +69,25 @@ public class MediaServiceTest {
         assertThat(media).isNotNull();
     }
     @Test
-    public void updateMediaTest(){
-        UpdateMediaRequest updateMediaRequest = new UpdateMediaRequest();
-        updateMediaRequest.setId(100L);
-        Media media = mediaService.getMediaBy(100L);
-        assertThat(media.getCategory().equals(ACTION));
-        updateMediaRequest.setDescription("family comedy");
-        updateMediaRequest.setCategory(COMEDY);
-        UpdateMediaResponse response = mediaService.updateMedia(updateMediaRequest);
-        Media media2 = mediaService.getMediaBy(100L);
-        assertThat(response).isNotNull();
-        assertThat(media2.getCategory().equals(COMEDY));
+    public void updateMediaTest() throws JsonPointerException {
+        Category category = mediaService.getMediaBy(103L).getCategory();
+        assertThat(category).isNotEqualTo(SCI_FI);
+        List<JsonPatchOperation> operations = List.of(
+                new ReplaceOperation(new JsonPointer("/category"),
+                        new TextNode(SCI_FI.name()))
+        );
+        JsonPatch updateMediaRequest = new JsonPatch(operations);
+        UpdateMediaResponse response = mediaService.updateMedia(103L, updateMediaRequest);
+        category = mediaService.getMediaBy(103L).getCategory();
+        assertThat(category).isEqualTo(SCI_FI);
 
+    }
+    @Test
+    public void getMediaForUserTest(){
+        Long userId = 200L;
+        List<MediaResponse> media = mediaService.getMediaFor(userId);
+        log.info("items->{}", media);
+        assertThat(media).hasSize(3);
     }
     private  static  UploadMediaRequest buildUploadMediaRequest(InputStream inputStream) throws IOException {
         UploadMediaRequest request = new UploadMediaRequest();
