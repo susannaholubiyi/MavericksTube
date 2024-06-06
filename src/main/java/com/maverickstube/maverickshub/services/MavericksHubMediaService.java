@@ -67,7 +67,7 @@ public class MavericksHubMediaService implements MediaService{
             JsonNode jsonMedia = objectMapper.convertValue(media, JsonNode.class);
 
             jsonMedia = updateRequest.apply(jsonMedia);
-            //apply jsonNode to JsonMedia(using objectMapper)
+            //convert jsonNode to JsonMedia(using objectMapper)
             media= objectMapper.convertValue(jsonMedia, Media.class);
             media = mediaRepository.save(media);
             return modelMapper.map(media, UpdateMediaResponse.class);

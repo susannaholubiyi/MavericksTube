@@ -9,6 +9,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -17,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static com.maverickstube.maverickshub.utils.TestUtils.TEST_VIDEO_LOCATION;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,6 +42,18 @@ public class MediaControllerTest {
                     .andExpect(status().isCreated())
                     .andDo(print());
         } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @Test
+    public void testGetMediaForUser() {
+        try {
+            mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/media?userId=200")
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().is2xxSuccessful())
+                    .andDo(print());
+        } catch (Exception e) {
+            assertThat(e).isNotNull();
             throw new RuntimeException(e);
         }
     }
