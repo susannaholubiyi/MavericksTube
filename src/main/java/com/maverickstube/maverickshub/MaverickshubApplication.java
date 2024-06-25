@@ -10,4 +10,5 @@ public class MaverickshubApplication {
 		SpringApplication.run(MaverickshubApplication.class, args);
 	}
 
+
 }

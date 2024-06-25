@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
-import com.maverickstube.maverickshub.dtos.request.UpdateMediaRequest;
 import com.maverickstube.maverickshub.dtos.request.UploadMediaRequest;
 import com.maverickstube.maverickshub.dtos.response.MediaResponse;
 import com.maverickstube.maverickshub.dtos.response.UpdateMediaResponse;
@@ -39,7 +38,8 @@ public class MavericksHubMediaService implements MediaService{
         User user = userService.getById(request.getUserId());
         try {
             Uploader uploader = cloudinary.uploader();
-           Map<?,?> response =  uploader.uploadLarge(request.getMediaFile().getBytes(),ObjectUtils.asMap("resource_type", "auto"));
+           Map<?,?> response =  uploader.uploadLarge(request.getMediaFile().getBytes(),ObjectUtils
+                   .asMap("resource_type", "auto"));
            log.info("cloudinary upload response:: {}", response);
            String url = response.get("url").toString();
             Media media = modelMapper.map(request, Media.class);
